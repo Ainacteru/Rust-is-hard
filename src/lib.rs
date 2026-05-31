@@ -1,6 +1,7 @@
 #![no_std]
 
 pub mod usb;
+pub mod defmt;
 
 #[cfg(feature = "rt")]
 pub use cortex_m_rt::entry;

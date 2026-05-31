@@ -5,9 +5,8 @@ use atsamd_hal::{ bsp_peripherals, clock::GenericClockController, delay::Delay, 
 use cortex_m_rt::entry;
 use defmt::info;
 use panic_halt as _;
-use embassy_usb_logger as _;
 
-use testing::{Pins, ehal::delay::DelayNs};
+use testing::{Pins, defmt::UsbWriter, ehal::delay::DelayNs};
 
 use testing::usb::Usb;
 
@@ -30,6 +29,9 @@ fn main() -> ! {
     let mut delay = Delay::new(core.SYST, &mut clocks);
 
     loop {
+        // UsbWriter::write_byte("hello".as_bytes());
+        info!("hellohi");
+
         led.toggle();
         delay.delay_ms(500u32);
     }

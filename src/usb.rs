@@ -8,12 +8,13 @@ use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
 use crate::usb_allocator;
 
-static USB_SERIAL: Mutex<RefCell<Option<SerialPort<'static, UsbBus>>>> = Mutex::new(RefCell::new(None));
+pub static USB_SERIAL: Mutex<RefCell<Option<SerialPort<'static, UsbBus>>>> = Mutex::new(RefCell::new(None));
 static USB_DEVICE: Mutex<RefCell<Option<UsbDevice<'static, UsbBus>>>> = Mutex::new(RefCell::new(None));
 
 pub struct Usb; 
 
 impl Usb {
+    #[cfg(feature = "usb")]
     pub fn new(
         _clock: &mut GenericClockController,
         pm: &mut Pm,
@@ -32,6 +33,7 @@ impl Usb {
 
             USB_DEVICE.borrow(cs).borrow_mut().replace( UsbDeviceBuilder::new(usb_alloc, UsbVidPid(0x16c0, 0x27dd))
                     .strings(&[StringDescriptors::new(LangID::EN)
+                        .manufacturer("GOO")
                         .product("grow one")])
                         .expect("Failed to set strings")
                     .device_class(USB_CLASS_CDC)
@@ -57,15 +59,20 @@ fn poll_usb() {
 
             if let Ok(count) = serial.read(&mut buf) {
                 for (i, c) in buf.iter().enumerate() {
+                    let c = *c as char;
                     if i >= count {
                         break;
                     }
-                    serial.write(&[*c]).ok();
+                    if c == '\r' {
+                        serial.write(b"\n").ok();
+                    } else if c == 'a' {
+                        serial.write(b"ari is gross").ok();
+                    } else {
+                        serial.write(&[c as u8]).ok();
+                    }
                 }
             };
         }
-
-        
     });
 }
 
