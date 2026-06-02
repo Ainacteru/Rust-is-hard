@@ -1,8 +1,10 @@
 UF2CONV = ~/Projects/Embedded/bootloader/microsoft-uf2/utils/uf2conv.py
-CARGO_OUT = $(shell find target/thumbv6m-none-eabi/release/ -maxdepth 1 -type f ! -name "*.*" ! -name ".*")
 DEVICE = GROSSBOOT
+CARGO_OUT = target/thumbv6m-none-eabi/release/testing
+
 BIN = builds/out.bin
 UF2 = builds/out.uf2
+
 
 $(BIN): $(CARGO_OUT)
 	mkdir -p builds
@@ -33,9 +35,9 @@ flash: $(UF2)
 # 	done; \
 
 # 	echo "Found GROSSBOOT!"; \
-
+	
 	$(UF2CONV) $(UF2) -f 0x68ed2b88 -D
-
+	
 clean:
 	cargo clean
 	rm -rf builds

@@ -3,7 +3,7 @@
 [build]
 target = "thumbv6m-none-eabi"
 
-
+[target.thumbv6m-none-eabi]
 rustflags = [
 
   # This is needed if your flash or ram addresses are not aligned to 0x10000 in memory.x
@@ -11,5 +11,8 @@ rustflags = [
   "-C", "link-arg=--nmagic",
   "-C", "link-arg=-Tlink.x",
 
-    "-C", "link-arg=-Tdefmt.x",
+  "-C", "link-arg=-Tdefmt.x",
 ]
+
+[env]
+DEFMT_LOG = "trace"

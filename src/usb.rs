@@ -52,7 +52,7 @@ fn poll_usb() {
         let mut dev_ref = USB_DEVICE.borrow(cs).borrow_mut();
         let usb_device =  dev_ref.as_mut();
 
-        if let (Some(device), Some(serial)) = (&usb_device, serial) {
+        if let (Some(_device), Some(serial)) = (&usb_device, serial) {
             usb_device.unwrap().poll(&mut [serial]);
 
             let mut buf = [0u8; 64];
@@ -63,12 +63,9 @@ fn poll_usb() {
                     if i >= count {
                         break;
                     }
-                    if c == '\r' {
-                        serial.write(b"\n").ok();
-                    } else if c == 'a' {
-                        serial.write(b"ari is gross").ok();
-                    } else {
-                        serial.write(&[c as u8]).ok();
+                    match c {
+                        '\r' => { serial.write(b"\r\n").ok(); }
+                        _ => { serial.write(&[c as u8]).ok(); }
                     }
                 }
             };

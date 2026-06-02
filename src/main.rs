@@ -1,10 +1,12 @@
 #![no_std]
 #![no_main]
 
+use core::panic::PanicInfo;
+
 use atsamd_hal::{ bsp_peripherals, clock::GenericClockController, delay::Delay, pac::{CorePeripherals, Interrupt, NVIC, Peripherals}, prelude::_atsamd_hal_embedded_hal_digital_v2_ToggleableOutputPin};
 use cortex_m_rt::entry;
-use defmt::info;
-use panic_halt as _;
+use defmt::{debug, error, info, println, trace, warn};
+use defmt as _;
 
 use testing::{Pins, defmt::UsbWriter, ehal::delay::DelayNs};
 
@@ -29,11 +31,26 @@ fn main() -> ! {
     let mut delay = Delay::new(core.SYST, &mut clocks);
 
     loop {
-        // UsbWriter::write_byte("hello".as_bytes());
-        info!("hellohi");
+        info!("yoyoyo");
+        println!("ahh");
+        warn!("help!");
+        debug!("sooo...");
+        trace!("ah!");
+        error!("um");
+
 
         led.toggle();
         delay.delay_ms(500u32);
+    }
+}
+
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    let info = info.message();
+    let info = info.as_str().unwrap().as_bytes();
+
+    loop {
+        UsbWriter::write_byte(info);
     }
 }
 

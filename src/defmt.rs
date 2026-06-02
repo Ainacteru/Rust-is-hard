@@ -1,6 +1,5 @@
-use core::{cell::RefCell, fmt::{self, Write}, ops::{Deref, DerefMut}, sync::atomic::{AtomicBool, Ordering}};
+use core::{cell::RefCell, sync::atomic::{AtomicBool, Ordering}};
 use cortex_m::interrupt::{Mutex, free};
-use critical_section::RestoreState;
 use defmt::Encoder;
 
 use crate::usb::USB_SERIAL;
@@ -42,15 +41,15 @@ impl UsbLogger {
     }
 
     fn acquire(&self) {
-        free(|cs| {
-
         if self.taken.load(Ordering::Relaxed) {
             panic!("defmt logger re-entered");
         }
 
         self.taken.store(true, Ordering::Relaxed);
-        self.encoder.borrow(cs).borrow_mut().start_frame(UsbWriter::write_byte);
-    });
+
+        free(|cs| {
+            self.encoder.borrow(cs).borrow_mut().start_frame(UsbWriter::write_byte);
+        });
     }
 
     unsafe fn flush(&self) {
@@ -61,7 +60,6 @@ impl UsbLogger {
         free(|cs| {
             self.encoder.borrow(cs).borrow_mut().end_frame(UsbWriter::write_byte);
         });
-
         self.taken.store(false, Ordering::Relaxed);
     }
 
@@ -77,11 +75,11 @@ pub struct UsbWriter;
 impl UsbWriter {
     pub fn write_byte(bytes: &[u8]) {
         free(|cs| {
-        let mut serial = USB_SERIAL.borrow(cs).borrow_mut();
+            let mut serial = USB_SERIAL.borrow(cs).borrow_mut();
 
-        if let Some(serial) = serial.as_mut() {
-            let _ = serial.write(bytes);
-        }
+            if let Some(serial) = serial.as_mut() {
+                let _ = serial.write(bytes);
+            }
         });
     }
 }
