@@ -1,6 +1,7 @@
-use core::{cell::RefCell, sync::atomic::{AtomicBool, Ordering}};
+use core::{cell::RefCell, sync::atomic::{AtomicBool}};
 use cortex_m::interrupt::{Mutex, free};
 use defmt::Encoder;
+use portable_atomic::{AtomicUsize, Ordering};
 
 use crate::usb::USB_SERIAL;
 
@@ -75,10 +76,13 @@ pub struct UsbWriter;
 impl UsbWriter {
     pub fn write_byte(bytes: &[u8]) {
         free(|cs| {
-            let mut serial = USB_SERIAL.borrow(cs).borrow_mut();
+            let mut dev_ref = crate::usb::USB_DEVICE.borrow(cs).borrow_mut();
+            let mut serial_ref = USB_SERIAL.borrow(cs).borrow_mut();
 
-            if let Some(serial) = serial.as_mut() {
+            if let (Some(device), Some(serial)) = (dev_ref.as_mut(), serial_ref.as_mut()) {
+                device.poll(&mut [serial]);
                 let _ = serial.write(bytes);
+                device.poll(&mut [serial]);
             }
         });
     }

@@ -1,27 +1,27 @@
 use core::{cell::RefCell};
 
-use atsamd_hal::{clock::{GenericClockController, UsbClock}, gpio::{AnyPin, PA24, PA25, Pin}, pac::Pm, usb::UsbBus};
+use atsamd_hal::{clock::GenericClockController, pac::Pm, usb::UsbBus};
 use cortex_m::{interrupt::Mutex, singleton};
 use atsamd_hal::pac::interrupt;
-use usb_device::{LangID, bus::{UsbBus as _, UsbBusAllocator}, class::UsbClass, device::{StringDescriptors, UsbDevice, UsbDeviceBuilder, UsbVidPid}};
+use usb_device::{LangID, bus::UsbBusAllocator, device::{StringDescriptors, UsbDevice, UsbDeviceBuilder, UsbVidPid}};
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
 use crate::usb_allocator;
 
 pub static USB_SERIAL: Mutex<RefCell<Option<SerialPort<'static, UsbBus>>>> = Mutex::new(RefCell::new(None));
-static USB_DEVICE: Mutex<RefCell<Option<UsbDevice<'static, UsbBus>>>> = Mutex::new(RefCell::new(None));
+pub static USB_DEVICE: Mutex<RefCell<Option<UsbDevice<'static, UsbBus>>>> = Mutex::new(RefCell::new(None));
 
 pub struct Usb; 
 
 impl Usb {
     #[cfg(feature = "usb")]
-    pub fn new(
+    pub fn set_up(
         _clock: &mut GenericClockController,
         pm: &mut Pm,
         dm: impl Into<crate::UsbDm>,
         dp: impl Into<crate::UsbDp>,
         _usb: atsamd_hal::pac::Usb,
-    ) -> Self 
+    ) 
     {
         cortex_m::interrupt::free(|cs| {
 
@@ -39,8 +39,6 @@ impl Usb {
                     .device_class(USB_CLASS_CDC)
                     .build());
         });
-
-        Self
     }
 }
 
