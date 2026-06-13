@@ -1,4 +1,4 @@
-use atsamd_hal::{clock::{GClock, GenericClockController}, fugit::ExtU32, pac::{Peripherals, Pm, Tc3, pm}, timer::TimerCounter, timer_traits::InterruptDrivenTimer};
+use atsamd_hal::{clock::GenericClockController, fugit::ExtU32, pac::{Pm, Tc3}, timer::TimerCounter, timer_traits::InterruptDrivenTimer};
 use portable_atomic::{AtomicU32, Ordering};
 use crate::pac::interrupt;
 

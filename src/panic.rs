@@ -1,10 +1,4 @@
-use core::{panic::PanicInfo, ptr::{write, write_volatile}};
-
-use atsamd_hal::{clock::GenericClockController, delay::Delay, ehal::delay::DelayNs, pac::{CorePeripherals, Peripherals}, prelude::_atsamd_hal_embedded_hal_digital_v2_ToggleableOutputPin};
-use cortex_m_rt::pre_init;
-use defmt::error;
-
-use crate::RgbRed;
+use core::panic::PanicInfo;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {

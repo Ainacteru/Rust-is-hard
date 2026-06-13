@@ -1,7 +1,7 @@
 use core::{cell::RefCell, sync::atomic::{AtomicBool}};
 use cortex_m::interrupt::{Mutex, free};
 use defmt::Encoder;
-use portable_atomic::{AtomicUsize, Ordering};
+use portable_atomic::{Ordering};
 
 use crate::usb::USB_SERIAL;
 
