@@ -9,7 +9,7 @@ use usbd_serial::{SerialPort, USB_CLASS_CDC};
 use crate::usb_allocator;
 
 pub static USB_SERIAL: Mutex<RefCell<Option<SerialPort<'static, UsbBus>>>> = Mutex::new(RefCell::new(None));
-pub static USB_DEVICE: Mutex<RefCell<Option<UsbDevice<'static, UsbBus>>>> = Mutex::new(RefCell::new(None));
+static USB_DEVICE: Mutex<RefCell<Option<UsbDevice<'static, UsbBus>>>> = Mutex::new(RefCell::new(None));
 
 pub struct Usb; 
 

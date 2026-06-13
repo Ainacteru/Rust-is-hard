@@ -76,13 +76,10 @@ pub struct UsbWriter;
 impl UsbWriter {
     pub fn write_byte(bytes: &[u8]) {
         free(|cs| {
-            let mut dev_ref = crate::usb::USB_DEVICE.borrow(cs).borrow_mut();
-            let mut serial_ref = USB_SERIAL.borrow(cs).borrow_mut();
+            let mut serial = USB_SERIAL.borrow(cs).borrow_mut();
 
-            if let (Some(device), Some(serial)) = (dev_ref.as_mut(), serial_ref.as_mut()) {
-                device.poll(&mut [serial]);
+            if let Some(serial) = serial.as_mut() {
                 let _ = serial.write(bytes);
-                device.poll(&mut [serial]);
             }
         });
     }

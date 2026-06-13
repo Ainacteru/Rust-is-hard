@@ -1,6 +1,7 @@
-use core::panic::PanicInfo;
+use core::{panic::PanicInfo, ptr::{write, write_volatile}};
 
 use atsamd_hal::{clock::GenericClockController, delay::Delay, ehal::delay::DelayNs, pac::{CorePeripherals, Peripherals}, prelude::_atsamd_hal_embedded_hal_digital_v2_ToggleableOutputPin};
+use cortex_m_rt::pre_init;
 use defmt::error;
 
 use crate::RgbRed;
@@ -24,10 +25,11 @@ fn panic(info: &PanicInfo) -> ! {
     // let mut delay = Delay::new(core.SYST, &mut clocks);
     // let pins = crate::Pins::new(peripherals.port);
     // let mut red:RgbRed = pins.rgb_red.into();
-    
+
     loop {
-        error!("panic! {}", info);
-        // red.toggle();
-        // delay.delay_ms(500u32);
+        defmt::error!("panic! {}", defmt::Display2Format(info));
+
+        cortex_m::asm::delay(5_000_000);
+        
     }
 }

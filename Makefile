@@ -1,21 +1,22 @@
 UF2CONV = ~/Projects/Embedded/bootloader/microsoft-uf2/utils/uf2conv.py
 DEVICE = GROSSBOOT
-CARGO_OUT = target/thumbv6m-none-eabi/release/testing
+CARGO_OUT = target/thumbv6m-none-eabi/release/$(shell cat Cargo.toml | rg name | sed -E 's/.*\"(.*)\".*/\1/' )
+# CARGO_OUT = target/thumbv6m-none-eabi/release/samd21-usb-defmt
 
-BIN = builds/out.bin
-UF2 = builds/out.uf2
+OUTPUT = output
+BIN = $(OUTPUT)/out.bin
+UF2 = $(OUTPUT)/out.uf2
 
+build: $(BIN) $(UF2)
 
 $(BIN): $(CARGO_OUT)
-	mkdir -p builds
+	mkdir -p $(OUTPUT)
 	arm-none-eabi-objcopy -O binary $(CARGO_OUT) $(BIN)
 
 .PHONY: $(CARGO_OUT) flash uf2_flash clean
 
 $(CARGO_OUT):
 	cargo build --release
-
-uf2 : $(UF2)
 
 $(UF2): $(BIN)
 	$(UF2CONV) $(BIN) -b 0x2000 -f 0x68ed2b88 -o $(UF2)
@@ -40,4 +41,4 @@ flash: $(UF2)
 	
 clean:
 	cargo clean
-	rm -rf builds
+	rm -rf $(OUTPUT)
