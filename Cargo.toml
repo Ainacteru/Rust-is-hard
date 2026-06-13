@@ -1,5 +1,5 @@
 [package]
-name = "testing"
+name = "samd21-usb-defmt"
 version = "0.1.0"
 edition = "2021"
 resolver = "2"
@@ -8,8 +8,6 @@ resolver = "2"
 chip = "ATSAMD21G18A"
 
 [dependencies]
-heapless = "0.9.2"
-
 cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
 cortex-m-rt = { version = "0.7", optional = true }
 
@@ -18,20 +16,13 @@ atsamd-hal = { version = "0.23.3", default-features = false}
 usb-device = { version ="0.3.2", optional = true }
 usbd-serial ={ version = "0.2.2", optional = true }
 
-embassy-executor = { version = "0.10.0", optional = true, features = ["platform-cortex-m", "executor-thread", "defmt"] }
-libm = "0.2.16"
 defmt = { version = "1.1.0"}
-embassy-time = { version = "0.5.1", features = ["defmt", "defmt-timestamp-uptime"] }
-embassy-futures = { version = "0.1.2", features = ["defmt"] }
-panic-halt = "1.0.0"
-log = "0.4.30"
-critical-section = "1.2.0"
+portable-atomic = { version = "1.13.1", features = ["critical-section"] }
 
 [features]
-default = ["rt", "usb", "async", "atsamd-hal/samd21g"]
+default = ["rt", "usb", "atsamd-hal/samd21g"]
 rt = ["dep:cortex-m-rt", "atsamd-hal/samd21g-rt"]
 usb = ["atsamd-hal/usb", "dep:usb-device", "dep:usbd-serial",]
-async = ["atsamd-hal/async", "dep:embassy-executor"]
 
 [profile.dev]
 panic = "abort"
